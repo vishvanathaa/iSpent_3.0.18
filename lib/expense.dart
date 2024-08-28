@@ -5,6 +5,8 @@ import 'package:ispent/screenarguments.dart';
 import 'package:ispent/database/model/category.dart';
 import 'package:ispent/database/database_helper.dart';
 
+import 'main.dart';
+
 class ExpenseScreen extends StatefulWidget {
   final int data;
 
@@ -22,120 +24,173 @@ class _ExpenseState extends State<ExpenseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: new IconButton(
+            icon: new Icon(Icons.arrow_back),
+            color: Colors.yellowAccent,
+            onPressed: () {
+              Navigator.of(context).push(
+                // With MaterialPageRoute, you can pass data between pages,
+                // but if you have a more complex app, you will quickly get lost.
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ISpentHome(key: GlobalKey(), title: '',)
+                ),
+              );
+            }
+        ),
         foregroundColor: Colors.white,
-        title: Text(widget.data == 0 ?"Expense Categories":"Income Categories"),
+        title:
+            Text(widget.data == 0 ? "Expense Categories" : "Income Categories"),
         backgroundColor: Colors.indigo,
       ),
       //resizeToAvoidBottomPadding: false,
       body: Column(
         children: [
           expenseCategoryList(context),
-          Expanded(child:
-          SizedBox(
+          Expanded(
+              child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.71,
             child: CustomScrollView(
               primary: false,
               slivers: <Widget>[
-                widget.data==0?
-                SliverPadding(
-                  padding: const EdgeInsets.only(left: 10, right: 15),
-                  sliver: SliverGrid.count(
-                    crossAxisSpacing: 2,
-                    mainAxisSpacing: 2,
-                    crossAxisCount: 4,
-                    children: <Widget>[
-                      getCategory(Icons.local_grocery_store, "Grocery",
-                          "local_grocery_store",widget.data),
-                      getCategory(Icons.add_shopping_cart, "Shopping",
-                          "add_shopping_cart",widget.data),
-                      getCategory(Icons.business, "Business", "business",widget.data),
-                      getCategory(Icons.local_offer, "Meat", "local_offer",widget.data),
-                      getCategory(
-                          Icons.smoking_rooms, "Smoking", "smoking_rooms",widget.data),
-                      getCategory(
-                          Icons.local_dining, "Eatables", "local_dining",widget.data),
-                      getCategory(Icons.local_drink, "Drinks", "local_drink",widget.data),
-                      getCategory(Icons.theaters, "Fun", "theaters",widget.data),
-                      getCategory(Icons.loyalty, "Bills", "loyalty",widget.data),
-                      getCategory(Icons.spa, "Fashion", "spa",widget.data),
-                      getCategory(Icons.airplanemode_active, "Travel",
-                          "airplanemode_active",widget.data),
-                      getCategory(
-                          Icons.local_gas_station, "Fuel", "local_gas_station",widget.data),
-                      getCategory(
-                          Icons.shopping_basket, "Veg", "shopping_basket",widget.data),
-                      getCategory(Icons.home, "Household", "home",widget.data),
-                      getCategory(
-                          Icons.local_movies, "Function", "local_movies",widget.data),
-                      getCategory(Icons.book, "Stationary", "book",widget.data),
-                      getCategory(Icons.phone_iphone, "Phone", "phone_iphone",widget.data),
-                      getCategory(Icons.toys, "Toys", "toys",widget.data),
-                      getCategory(
-                          Icons.local_hospital, "Health", "local_hospital",widget.data),
-                      getCategory(Icons.security, "Insurance", "security",widget.data),
-                      getCategory(Icons.school, "Education", "school",widget.data),
-                      getCategory(Icons.pets, "Pets", "pets",widget.data),
-                      getCategory(Icons.security, "Security", "Security",widget.data),
-                      getCategory(Icons.alarm, "EMI", "alarm",widget.data),
-                      getCategory(
-                          Icons.location_city, "Creation", "location_city",widget.data),
-                      getCategory(Icons.computer, "Computer", "computer",widget.data),
-                      getCategory(Icons.bug_report, "Repair", "bug_report",widget.data),
-                      getCategory(Icons.games, "Sports", "games",widget.data),
-                      getCategory(
-                          Icons.directions_car, "Car", "directions_car",widget.data),
-                      getCategory(Icons.train, "Train", "train",widget.data),
-                      getCategory(Icons.local_taxi, "Taxi", "local_taxi",widget.data),
-                      getCategory(
-                          Icons.directions_bike, "Bike", "directions_bike",widget.data),
-                      getCategory(
-                          Icons.directions_bus, "Bus", "directions_bus",widget.data),
-                      getCategory(
-                          Icons.monetization_on, "Rent", "monetization_on",widget.data),
-                      getCategory(Icons.star_border, "Others", "star_border",widget.data),
-                      addCategory(
-                          Icons.local_hospital, "Add New", "local_hospital",0)
-                      ,
-                    ],
-                  ),
-                ): SliverPadding(
-    padding: const EdgeInsets.only(left: 10, right: 15),
-    sliver: SliverGrid.count(
-    crossAxisSpacing: 2,
-    mainAxisSpacing: 2,
-    crossAxisCount: 4,
-    children: <Widget>[
-    getCategory(Icons.account_balance_wallet, "Salary",
-    "account_balance_wallet",widget.data),
-    getCategory(Icons.business, "Business", "business",widget.data),
-    getCategory(Icons.theaters, "Ads", "theaters",widget.data),
-      getCategory(Icons.grass, "grants", "grass",widget.data),
-    getCategory(Icons.loyalty, "Sale", "loyalty",widget.data),
-      getCategory(
-          Icons.location_city, "Estate", "location_city",widget.data),
-      getCategory(Icons.bar_chart, "Dividend", "bar_chart",widget.data),
-      getCategory(Icons.spa, "Lottery", "spa",widget.data),
-      getCategory(
-          Icons.monetization_on, "Bond", "monetization_on",widget.data),
-      getCategory(Icons.bug_report, "Services", "bug_report",widget.data),
-      getCategory(Icons.school, "Education", "school",widget.data),
-      getCategory(Icons.pie_chart, "Shares", "pie_chart",widget.data),
-      getCategory(Icons.home, "Rental", "home",widget.data),
-      getCategory(Icons.security, "Deposit", "security",widget.data),
-      getCategory(
-          Icons.monetization_on, "Pension", "monetization_on",widget.data),
-    getCategory(
-    Icons.celebration_outlined, "Coupons", "celebration_outlined",widget.data),
-    getCategory(Icons.alarm, "Refunds", "alarm",widget.data),
-      getCategory(Icons.account_balance_wallet_outlined, "Awards", "account_balance_wallet_outlined",widget.data),
-    getCategory(Icons.computer, "Tuition", "computer",widget.data),
-    getCategory(Icons.star_border, "Others", "star_border",widget.data),
-    addCategory(
-    Icons.local_hospital, "Add New", "local_hospital",1)
-  ,
-    ],
-    ),
-    ),
+                widget.data == 0
+                    ? SliverPadding(
+                        padding: const EdgeInsets.only(left: 10, right: 15),
+                        sliver: SliverGrid.count(
+                          crossAxisSpacing: 2,
+                          mainAxisSpacing: 2,
+                          crossAxisCount: 4,
+                          children: <Widget>[
+                            getCategory(Icons.local_grocery_store, "Grocery",
+                                "local_grocery_store", widget.data),
+                            getCategory(Icons.add_shopping_cart, "Shopping",
+                                "add_shopping_cart", widget.data),
+                            getCategory(Icons.business, "Business", "business",
+                                widget.data),
+                            getCategory(Icons.local_offer, "Meat",
+                                "local_offer", widget.data),
+                            getCategory(Icons.smoking_rooms, "Smoking",
+                                "smoking_rooms", widget.data),
+                            getCategory(Icons.local_dining, "Eatables",
+                                "local_dining", widget.data),
+                            getCategory(Icons.local_drink, "Drinks",
+                                "local_drink", widget.data),
+                            getCategory(
+                                Icons.theaters, "Fun", "theaters", widget.data),
+                            getCategory(
+                                Icons.loyalty, "Bills", "loyalty", widget.data),
+                            getCategory(
+                                Icons.spa, "Fashion", "spa", widget.data),
+                            getCategory(Icons.airplanemode_active, "Travel",
+                                "airplanemode_active", widget.data),
+                            getCategory(Icons.local_gas_station, "Fuel",
+                                "local_gas_station", widget.data),
+                            getCategory(Icons.shopping_basket, "Veg",
+                                "shopping_basket", widget.data),
+                            getCategory(
+                                Icons.home, "Household", "home", widget.data),
+                            getCategory(Icons.local_movies, "Function",
+                                "local_movies", widget.data),
+                            getCategory(
+                                Icons.book, "Stationary", "book", widget.data),
+                            getCategory(Icons.phone_iphone, "Phone",
+                                "phone_iphone", widget.data),
+                            getCategory(
+                                Icons.toys, "Toys", "toys", widget.data),
+                            getCategory(Icons.local_hospital, "Health",
+                                "local_hospital", widget.data),
+                            getCategory(Icons.security, "Insurance", "security",
+                                widget.data),
+                            getCategory(Icons.school, "Education", "school",
+                                widget.data),
+                            getCategory(
+                                Icons.pets, "Pets", "pets", widget.data),
+                            getCategory(Icons.security, "Security", "Security",
+                                widget.data),
+                            getCategory(
+                                Icons.alarm, "EMI", "alarm", widget.data),
+                            getCategory(Icons.location_city, "Creation",
+                                "location_city", widget.data),
+                            getCategory(Icons.computer, "Computer", "computer",
+                                widget.data),
+                            getCategory(Icons.bug_report, "Repair",
+                                "bug_report", widget.data),
+                            getCategory(
+                                Icons.games, "Sports", "games", widget.data),
+                            getCategory(Icons.directions_car, "Car",
+                                "directions_car", widget.data),
+                            getCategory(
+                                Icons.train, "Train", "train", widget.data),
+                            getCategory(Icons.local_taxi, "Taxi", "local_taxi",
+                                widget.data),
+                            getCategory(Icons.directions_bike, "Bike",
+                                "directions_bike", widget.data),
+                            getCategory(Icons.directions_bus, "Bus",
+                                "directions_bus", widget.data),
+                            getCategory(Icons.monetization_on, "Rent",
+                                "monetization_on", widget.data),
+                            getCategory(Icons.star_border, "Others",
+                                "star_border", widget.data),
+                            addCategory(Icons.local_hospital, "Add New",
+                                "local_hospital", 0),
+                          ],
+                        ),
+                      )
+                    : SliverPadding(
+                        padding: const EdgeInsets.only(left: 10, right: 15),
+                        sliver: SliverGrid.count(
+                          crossAxisSpacing: 2,
+                          mainAxisSpacing: 2,
+                          crossAxisCount: 4,
+                          children: <Widget>[
+                            getCategory(Icons.account_balance_wallet, "Salary",
+                                "account_balance_wallet", widget.data),
+                            getCategory(Icons.business, "Business", "business",
+                                widget.data),
+                            getCategory(
+                                Icons.theaters, "Ads", "theaters", widget.data),
+                            getCategory(
+                                Icons.grass, "grants", "grass", widget.data),
+                            getCategory(
+                                Icons.loyalty, "Sale", "loyalty", widget.data),
+                            getCategory(Icons.location_city, "Estate",
+                                "location_city", widget.data),
+                            getCategory(Icons.bar_chart, "Dividend",
+                                "bar_chart", widget.data),
+                            getCategory(
+                                Icons.spa, "Lottery", "spa", widget.data),
+                            getCategory(Icons.monetization_on, "Bond",
+                                "monetization_on", widget.data),
+                            getCategory(Icons.bug_report, "Services",
+                                "bug_report", widget.data),
+                            getCategory(Icons.school, "Education", "school",
+                                widget.data),
+                            getCategory(Icons.pie_chart, "Shares", "pie_chart",
+                                widget.data),
+                            getCategory(
+                                Icons.home, "Rental", "home", widget.data),
+                            getCategory(Icons.security, "Deposit", "security",
+                                widget.data),
+                            getCategory(Icons.monetization_on, "Pension",
+                                "monetization_on", widget.data),
+                            getCategory(Icons.celebration_outlined, "Coupons",
+                                "celebration_outlined", widget.data),
+                            getCategory(
+                                Icons.alarm, "Refunds", "alarm", widget.data),
+                            getCategory(
+                                Icons.account_balance_wallet_outlined,
+                                "Awards",
+                                "account_balance_wallet_outlined",
+                                widget.data),
+                            getCategory(Icons.computer, "Tuition", "computer",
+                                widget.data),
+                            getCategory(Icons.star_border, "Others",
+                                "star_border", widget.data),
+                            addCategory(Icons.local_hospital, "Add New",
+                                "local_hospital", 1),
+                          ],
+                        ),
+                      ),
               ],
             ),
           )),
@@ -144,7 +199,8 @@ class _ExpenseState extends State<ExpenseScreen> {
     );
   }
 
-  Widget addCategory(IconData icon, String categoryName, String iconName,int type) {
+  Widget addCategory(
+      IconData icon, String categoryName, String iconName, int type) {
     return Container(
       padding: const EdgeInsets.all(2),
       child: Column(children: [
@@ -166,8 +222,18 @@ class _ExpenseState extends State<ExpenseScreen> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => AddExpenseCategoryScreen(
-                          args: new ScreenArguments("Expense Category",
-                              Icons.ac_unit, iconName, "", "", "", 1, 1,type), key: GlobalKey(),)),
+                            args: new ScreenArguments(
+                                "Expense Category",
+                                Icons.ac_unit,
+                                iconName,
+                                "",
+                                "",
+                                "",
+                                1,
+                                1,
+                                type),
+                            key: GlobalKey(),
+                          )),
                 );
               },
             )),
@@ -184,8 +250,8 @@ class _ExpenseState extends State<ExpenseScreen> {
     );
   }
 
-  Widget getCategory(IconData icon, String categoryName, String iconName,int type) {
-
+  Widget getCategory(
+      IconData icon, String categoryName, String iconName, int type) {
     return Container(
       padding: const EdgeInsets.all(2),
       child: Column(children: [
@@ -196,7 +262,7 @@ class _ExpenseState extends State<ExpenseScreen> {
             ),
             child: IconButton(
               icon: new Icon(
-               icon,
+                icon,
                 color: Colors.indigo,
               ),
               //tooltip: 'Second splashColor: Colors.redscreen',
@@ -205,8 +271,10 @@ class _ExpenseState extends State<ExpenseScreen> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => AddExpenseScreen(
-                          args: new ScreenArguments(
-                              categoryName, icon, iconName, "", "", "", 1, 1,type), key: GlobalKey(),)),
+                            args: new ScreenArguments(categoryName, icon,
+                                iconName, "", "", "", 1, 1, type),
+                            key: GlobalKey(),
+                          )),
                 );
               },
             )),
@@ -275,8 +343,44 @@ class _ExpenseState extends State<ExpenseScreen> {
                           width: MediaQuery.of(context).size.width / 3,
                           alignment: Alignment.center,
                           padding: EdgeInsets.only(top: 10.0),
-                          child: getCategory(Icons.ac_unit,
-                              snapshot.data![index].categoryName, "ac_unit",widget.data),
+                          child: Stack(
+                            children: [
+                              Align(
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      getCategory(
+                                          Icons.ac_unit,
+                                          snapshot.data![index].categoryName,
+                                          "ac_unit",
+                                          widget.data),
+                                    ],
+                                  )),
+                              Align(
+                                  alignment: Alignment.topRight,
+                                  child: new IconButton(
+                                    alignment: Alignment.topRight,
+                                    icon: new Icon(
+                                        color: Colors.red, Icons.close),
+                                    highlightColor: Colors.yellowAccent,
+                                    onPressed: () {
+                                      deleteCategory(snapshot.data?[index].id);
+                                      Navigator.of(context).push(
+                                        // With MaterialPageRoute, you can pass data between pages,
+                                        // but if you have a more complex app, you will quickly get lost.
+                                        MaterialPageRoute(
+                                          builder: (context) => ExpenseScreen(
+                                            data: widget.data,
+                                            key: GlobalKey(),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  )),
+                            ],
+                          ),
                         ),
                       )
                     ],
@@ -284,6 +388,15 @@ class _ExpenseState extends State<ExpenseScreen> {
                 });
           }
         });
+  }
+
+  deleteCategory(int? id) {
+    var db = new DatabaseHelper();
+    db.deleteCategory(id == null ? 0 : id);
+    ExpenseScreen(
+      data: 0,
+      key: GlobalKey(),
+    );
   }
 
   void showOverlay(BuildContext context) async {

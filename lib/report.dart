@@ -2,8 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import "database/model/expenditure.dart";
 import "dart:collection";
-
-///import 'package:charts_flutter/flutter.dart' as charts;
+import 'dart:developer';
 import 'package:ispent/database/database_helper.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:ispent/utilities.dart';
@@ -22,11 +21,11 @@ class Report extends StatefulWidget {
   final int month;
   final int year;
   final int mode;
-
+  final int day;
   Report(
     this.month,
     this.year,
-    this.mode, {
+    this.mode,this.day, {
     required Key key,
   }) : super(key: key);
 
@@ -39,8 +38,6 @@ class _ReportState extends State<Report> {
   Map<String, double> dataMap = new Map();
   int chartType = 0;
 
-  // late List<charts.Series<dynamic, DateTime>> seriesList;
-
   double getCategoryAmount(List<Expenditure> source, String categoryName) {
     double totalAmount = 0;
     for (int i = 0; i < source.length; i++) {
@@ -52,52 +49,82 @@ class _ReportState extends State<Report> {
   }
 
   Future<List<Expenditure>> getExpenseList() {
-    return db.getExpenses(widget.month, widget.year, widget.mode, 0);
+    return db.getExpenses(widget.month, widget.year, widget.mode, 0,widget.day);
   }
 
   Future<List<Expenditure>> getYearExpense() {
-    return db.getExpenses(widget.month, widget.year, 1, 0);
+    return db.getExpenses(widget.month, widget.year, 1, 0,widget.day);
   }
 
-  @override
   void initState() {
     // Disable animations for image tests.
     super.initState();
     chartType = 0;
   }
 
-  void prepareChartData(List<Expenditure> expenses) {
-    _categoryExpense = []; //new List<Expenditure>();
-    List<String> categoryList = []; //new List<String>();
-    if (expenses.length > 0) {
-      for (int i = 0; i < expenses.length; i++) {
-        categoryList.add(expenses[i].itemName);
-      }
-      List<String> distinctCategory =
-          LinkedHashSet<String>.from(categoryList).toList();
-      for (var j = 0; j < distinctCategory.length; j++) {
-        double totalAmount =
-            getCategoryAmount(expenses, distinctCategory[j].toString());
-        _categoryExpense.add(new Expenditure(
-            totalAmount, distinctCategory[j].toString(), "", "", "", 0));
-        dataMap.putIfAbsent(distinctCategory[j].toString(), () => totalAmount);
-      }
-    }
-  }
-
   List<ChartData> prepareBarChartData(List<Expenditure> expenses) {
     List<ChartData> lChartData = [];
+    int i = 0;
     var groupByMonth =
         expenses.groupListsBy((obj) => obj.entryDate.substring(5, 7));
+
     groupByMonth.forEach((month, list) {
       double monthTotalExpense = 0.0;
       list.forEach((listItem) {
         // List item
         monthTotalExpense = monthTotalExpense + listItem.amount;
       });
-      lChartData.add(new ChartData(getMonthName(month), monthTotalExpense));
+      if (i < 6) {
+        lChartData.add(new ChartData(
+            getMonthName(month), monthTotalExpense, getColor(month)));
+      }
+      i++;
     });
+
     return lChartData;
+  }
+
+  Color getColor(String monNumber) {
+    Color returnValue = Colors.black;
+    switch (monNumber) {
+      case "01":
+        returnValue = Colors.black;
+        break;
+      case "02":
+        returnValue = Colors.green;
+        break;
+      case "03":
+        returnValue = Colors.red;
+        break;
+      case "04":
+        returnValue = Colors.blue;
+        break;
+      case "05":
+        returnValue = Colors.pink;
+        break;
+      case "06":
+        returnValue = Colors.amber;
+        break;
+      case "07":
+        returnValue = Colors.blueAccent;
+        break;
+      case "08":
+        returnValue = Colors.orange;
+        break;
+      case "09":
+        returnValue = Colors.tealAccent;
+        break;
+      case "10":
+        returnValue = Colors.orange;
+        break;
+      case "11":
+        returnValue = Colors.blueGrey;
+        break;
+      case "12":
+        returnValue = Colors.purpleAccent;
+        break;
+    }
+    return returnValue;
   }
 
   String getMonthName(String monNumber) {
@@ -142,22 +169,6 @@ class _ReportState extends State<Report> {
     }
     return returnValue;
   }
-
-  List<ChartData> getBarChartSeries(List<Expenditure> expenses) {
-    return prepareBarChartData(expenses);
-  }
-
-  /// Create series list with single series
-  /*List<charts.Series<Expenditure, String>> _createBarChartData() {
-    return [
-      new charts.Series<Expenditure, String>(
-        id: 'Expense Summary',
-        domainFn: (Expenditure sales, _) => sales.itemName,
-        measureFn: (Expenditure sales, _) => sales.amount,
-        data: _categoryExpense,
-      ),
-    ];
-  }*/
 
   Map<String, double> getPieChartData(List<Expenditure> expenses) {
     dataMap = Map();
@@ -285,10 +296,11 @@ class _ReportState extends State<Report> {
           var data = snapshot.data;
           List<ChartData> barChartData = [];
           if (data != null) {
-            barChartData = getBarChartSeries(data);
+            barChartData = prepareBarChartData(data);
           } else {
             barChartData = [];
           }
+
           if (snapshot.hasData) {
             return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -296,11 +308,18 @@ class _ReportState extends State<Report> {
                   Center(
                       child: Container(
                           child: SfCartesianChart(
-                              isTransposed: true,
-                              primaryXAxis: CategoryAxis(),
+                              title: ChartTitle(
+                                text: 'Half yearly expenses',
+                                alignment: ChartAlignment.near,
+                              ),
+                              primaryXAxis: CategoryAxis(
+                                  // maximumLabels: 6
+                                  ),
                               series: <CartesianSeries>[
-                        SplineSeries<ChartData, String>(
+                        LineSeries<ChartData, String>(
                             dataSource: barChartData,
+                            // Bind the color for all the data points from the data source
+                            pointColorMapper: (ChartData data, _) => data.color,
                             xValueMapper: (ChartData data, _) => data.x,
                             yValueMapper: (ChartData data, _) => data.y)
                       ])))
@@ -312,58 +331,6 @@ class _ReportState extends State<Report> {
         });
   }
 
-  /*Widget _barChart(BuildContext context) {
-    return new FutureBuilder<List<Expenditure>>(
-        future: getYearExpense(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) Text("");
-          var data = snapshot.data;
-          var barChartData;
-          if(data != null) {
-            barChartData = getBarChartSeries(data);
-          }
-          if (snapshot.hasData) {
-            return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(children: <Widget>[
-                  Container(
-                      padding: EdgeInsets.only(left: 10),
-                      //color: Colors.green, // Yellow
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height * 0.55,
-                      width: getWidth(),
-                      child: charts.BarChart(
-                        barChartData,
-                        behaviors: [
-                          new charts.ChartTitle('Expense By Month',
-                              behaviorPosition: charts.BehaviorPosition.top,
-                              titleOutsideJustification:
-                              charts.OutsideJustification.middleDrawArea),
-
-                        ],
-                        animate: animate,
-                        domainAxis: charts.OrdinalAxisSpec(
-                          renderSpec:
-                          charts.SmallTickRendererSpec(labelRotation: 0),
-                        ),
-                        defaultRenderer: new charts.BarRendererConfig(
-                            groupingType: charts.BarGroupingType.stacked,
-                            strokeWidthPx: 2.0),
-                      ))
-                ]));
-          } else {
-            return Center(
-                child: Align(
-                    alignment: Alignment.center,
-                    child: Text("")));
-          }
-        });
-
-    /// Sample ordinal data type.
-  }*/
-
   double getWidth() {
     int chartWidth = 0;
     chartWidth = (_categoryExpense.length * 35 + 80);
@@ -372,8 +339,9 @@ class _ReportState extends State<Report> {
 }
 
 class ChartData {
-  ChartData(this.x, this.y);
+  ChartData(this.x, this.y, this.color);
 
   final String x;
-  final double? y;
+  final double y;
+  final Color color;
 }

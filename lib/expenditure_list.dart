@@ -9,11 +9,12 @@ class ExpenditureList extends StatelessWidget {
   final int year;
   final int monthNumber;
   final int type;
+  final int day;
   ExpenditureList(
     this.expenses,
     this.mode,
     this.year,
-    this.monthNumber,this.type, {
+    this.monthNumber,this.type,this.day, {
     required Key key,
   }) : super(key: key);
 
@@ -50,7 +51,7 @@ class ExpenditureList extends StatelessWidget {
                                             mode,
                                             year,
                                             monthNumber,
-                                            expenseList[index].itemName,type, key: GlobalKey(),)),
+                                            expenseList[index].itemName,type,day, key: GlobalKey(),)),
                                   );
                                 })),
                     Expanded(

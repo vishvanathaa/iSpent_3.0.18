@@ -61,6 +61,12 @@ class _AppSettingsState extends State<AppSettings> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Radio(
+                              value: 2,
+                              groupValue: _radioValue1,
+                              onChanged: _handleRadioValueChange1,
+                            ),
+                            Text("Daily", style: TextStyle(fontSize: 18),),
+                            Radio(
                               value: 0,
                               groupValue: _radioValue1,
                               onChanged: _handleRadioValueChange1,
@@ -72,6 +78,7 @@ class _AppSettingsState extends State<AppSettings> {
                               onChanged: _handleRadioValueChange1,
                             ),
                             Text("Yearly", style: TextStyle(fontSize: 18),),
+
                           ],
                         )),
                     Container(

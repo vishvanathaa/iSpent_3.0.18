@@ -1,14 +1,32 @@
-class Expenditure {
+class ExpenseByMonth {
+  double _monthlyExpense = 0.0;
+  int _monthNumber = 0;
+  ExpenseByMonth(this._monthNumber, this._monthlyExpense);
+  ExpenseByMonth.map(dynamic obj) {
+    this._monthNumber = obj["monthNumber"];
+    this._monthlyExpense = obj["monthlyExpense"];
+  }
+  int get monthNumber => _monthNumber;
+  double get monthlyExpense => _monthlyExpense;
+  Map<String, dynamic> toMap() {
+    var map = new Map<String, dynamic>();
+    map["monthNumber"] = _monthNumber;
+    map["monthlyExpense"] = _monthlyExpense;
+    return map;
+  }
+}
 
+class Expenditure {
   int id = 0;
   double _amount = 0.0;
   String _itemName = "";
-  String _entryDate="";
+  String _entryDate = "";
   String _icon = "";
   String _note = "";
-  int _type =0;
+  int _type = 0;
 
-  Expenditure(this._amount, this._itemName, this._entryDate,this._icon,this._note,this._type);
+  Expenditure(this._amount, this._itemName, this._entryDate, this._icon,
+      this._note, this._type);
 
   Expenditure.map(dynamic obj) {
     this._amount = obj["amount"];
@@ -20,10 +38,15 @@ class Expenditure {
   }
 
   double get amount => _amount;
+
   String get itemName => _itemName;
+
   String get icon => _icon;
+
   String get entryDate => _entryDate;
+
   String get note => _note;
+
   int get categorytype => _type;
 
   Map<String, dynamic> toMap() {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ispent/home_presenter.dart';
 import 'package:ispent/database/model/expenditure.dart';
 import 'package:ispent/database/database_helper.dart';
@@ -9,7 +10,6 @@ import 'package:ispent/appSettings.dart';
 import 'package:ispent/transaction_list.dart';
 import 'package:flutter/services.dart';
 import 'package:ispent/report.dart';
-///import 'package:jiffy/jiffy.dart';
 import 'package:ispent/utilities.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
@@ -18,14 +18,19 @@ double _totalExpense = 0;
 double _totalIncome = 0;
 double _budget = 0;
 int _mode = 0;
-int _year = DateTime.now().year;
-int _monthNumber = DateTime.now().month;
+int _day = DateTime.now().day;
+int _year = DateTime
+    .now()
+    .year;
+int _monthNumber = DateTime
+    .now()
+    .month;
 List<Expenditure> _expenditureList = List.empty();
 bool visible = true;
 int _swapIndex = 0;
 var db = new DatabaseHelper();
 DateTime _currentDateTime = DateTime.now();
-//var _currentDateTime = Jiffy.now();
+
 class ISpentContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -36,9 +41,12 @@ class ISpentContainer extends StatelessWidget {
     return MaterialApp(
         initialRoute: '/',
         routes: <String, WidgetBuilder>{
-          'first': (BuildContext context) => new ISpentHome(key: GlobalKey(), title: '',),
-          '/second': (BuildContext context) => new ExpenseScreen(data:0, key: GlobalKey(),),
-          '/expense': (BuildContext context) => new ExpenseScreen(data:0, key: GlobalKey(),),
+          'first': (BuildContext context) =>
+          new ISpentHome(key: GlobalKey(), title: '',),
+          '/second': (BuildContext context) =>
+          new ExpenseScreen(data: 0, key: GlobalKey(),),
+          '/expense': (BuildContext context) =>
+          new ExpenseScreen(data: 0, key: GlobalKey(),),
         },
         home: ISpentHome(key: GlobalKey(), title: '',));
   }
@@ -69,7 +77,6 @@ class _HomePageState extends State<ISpentHome> implements HomeContract {
   void dispose() {
     super.dispose();
   }
-
   void getSettings() async {
     final prefs = await SharedPreferences.getInstance();
     final budgetKey = 'budget_double_key';
@@ -78,8 +85,12 @@ class _HomePageState extends State<ISpentHome> implements HomeContract {
     final budget = prefs.getInt(budgetKey) ?? 0.00;
     setState(() {
       _budget = budget.toDouble();
-      _monthNumber = DateTime.now().month;
-      _year = DateTime.now().year;
+      _monthNumber = DateTime
+          .now()
+          .month;
+      _year = DateTime
+          .now()
+          .year;
       _mode = mode;
     });
   }
@@ -98,12 +109,13 @@ class _HomePageState extends State<ISpentHome> implements HomeContract {
 
           child: ListView(
             children: [
-              _tile('CONTRIBUTORS', '',  Icons.call_received),
+              _tile('CONTRIBUTORS', '', Icons.call_received),
               _tile('Vishvanatha Acharya', 'Amasebail, Udupi', Icons.person),
               _tile('Shubharathna', 'Mandarthi, Udupi', Icons.person),
               _tile('Shivakumar', 'Elevation Media, Bangalore', Icons.person),
               _tile('Naveena Bhandari', 'Shimoga', Icons.person),
-              _tile('Ravindar Ganji', 'Greater Hyderabad Telengana', Icons.person),
+              _tile('Ravindar Ganji', 'Greater Hyderabad Telengana',
+                  Icons.person),
               _tile('Dr. Jagadeesh Krishna', 'Mysore', Icons.person),
               _tile('Madhuri Pai', 'Mangalore', Icons.person),
               _tile('Naveen Desouza', 'Bramhavar, Udupi', Icons.person),
@@ -135,6 +147,7 @@ class _HomePageState extends State<ISpentHome> implements HomeContract {
         ),
         //resizeToAvoidBottomPadding: false,
         appBar: AppBar(
+
           centerTitle: false,
           //titleSpacing: -5,
           iconTheme: IconThemeData(color: Colors.white),
@@ -149,14 +162,24 @@ class _HomePageState extends State<ISpentHome> implements HomeContract {
                   ),
                   onPressed: () {
                     setState(() {
-                      if (_mode == 0) {
-                       /// Jiffy newDate = Jiffy.parseFromDateTime(_currentDateTime);
-                        DateTime newDate = _currentDateTime.subtract(const Duration(days: 30));
-                            //.subtract(months: 1)
-                            //.dateTime;
+                      if(_mode == 2){
+                        DateTime newDate = _currentDateTime.subtract(const Duration(
+                            days: 1));
                         _monthNumber = newDate.month;
                         _currentDateTime = newDate;
                         _year = newDate.year;
+                        _day = newDate.day;
+                      }else
+                      if (_mode == 0) {
+                        /// Jiffy newDate = Jiffy.parseFromDateTime(_currentDateTime);
+                        DateTime newDate = _currentDateTime.subtract(
+                            const Duration(days: 30));
+                        //.subtract(months: 1)
+                        //.dateTime;
+                        _monthNumber = newDate.month;
+                        _currentDateTime = newDate;
+                        _year = newDate.year;
+                        _day = newDate.day;
                       } else {
                         _year -= 1;
                       }
@@ -164,8 +187,10 @@ class _HomePageState extends State<ISpentHome> implements HomeContract {
                     // do what you need to do when "Click here" gets clicked
                   }),
               Text(
-                (_mode == 0 ? currentMonth : "Year") + " - " + _year.toString(),
-                style: TextStyle(fontSize: 25,color: Colors.white),
+                ( (_mode == 0 ? currentMonth :
+                (_mode==2 ? DateFormat('dd-MMM-yyyy').format(_currentDateTime).toString(): "Year")))
+                    + (_mode==2 ? "":" - " + _year.toString()),
+                style: TextStyle(fontSize: 25, color: Colors.white),
               ),
               IconButton(
                 icon: Icon(
@@ -174,11 +199,21 @@ class _HomePageState extends State<ISpentHome> implements HomeContract {
                 ),
                 onPressed: () {
                   setState(() {
-                    if (_mode == 0) {
-                      DateTime newDate = _currentDateTime.add(const Duration(days:30));
+                    if(_mode == 2){
+                      DateTime newDate = _currentDateTime.add(const Duration(
+                          days: 1));
                       _monthNumber = newDate.month;
                       _currentDateTime = newDate;
                       _year = newDate.year;
+                      _day = newDate.day;
+                    }
+                    else if (_mode == 0) {
+                      DateTime newDate = _currentDateTime.add(const Duration(
+                          days: 30));
+                      _monthNumber = newDate.month;
+                      _currentDateTime = newDate;
+                      _year = newDate.year;
+                      _day = newDate.day;
                     } else {
                       _year += 1;
                     }
@@ -271,14 +306,16 @@ class _ChoiceCardState extends State<ChoiceCard> {
       return AppSettings();
     }
     else if (choiceType == "REPORT") {
-      return new Report(_monthNumber, _year, _mode, key: GlobalKey(),);
+      return new Report(_monthNumber, _year, _mode, key: GlobalKey(),_day,);
     }
     else {
-      return new TransactionList(_mode, _year, _monthNumber, "", key: GlobalKey(),);
+      return new TransactionList(
+        _mode, _year, _monthNumber, "", key: GlobalKey(),_day,);
     }
   }
 }
-Widget _addExpenseButton(BuildContext context){
+
+Widget _addExpenseButton(BuildContext context) {
   return FloatingActionButton.extended(
     onPressed: () {
       // Add your onPressed code here!
@@ -295,22 +332,21 @@ Widget _addExpenseButton(BuildContext context){
     shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(28.0))
     ),
-    icon: Icon(Icons.add,color: Colors.white,),
+    icon: Icon(Icons.add, color: Colors.white,),
     label: Text(
       "ADD EXPENSE",
       style: TextStyle(
           letterSpacing: 0.3,
           wordSpacing: 0.3,
-          color:Colors.white
+          color: Colors.white
       ),
     ),
-    backgroundColor: Colors.deepPurpleAccent,
+    backgroundColor: Colors.indigo,
   );
 }
-Widget _addIncomeButton(BuildContext context)
-{
 
-  if(_swapIndex == 1) {
+Widget _addIncomeButton(BuildContext context) {
+  if (_swapIndex == 1) {
     return TextButton.icon(
       style: TextButton.styleFrom(
         textStyle: TextStyle(color: Colors.white),
@@ -342,16 +378,15 @@ Widget _addIncomeButton(BuildContext context)
         );
       },
     );
-  }else if(_swapIndex == 0){
+  } else if (_swapIndex == 0) {
     return _addExpenseButton(context);
-
-  }else{
+  } else {
     return SizedBox(height: 0.01);
   }
 }
 
 Widget _headerBudgetView(BuildContext context) {
-  if(_swapIndex == 0) {
+  if (_swapIndex == 0) {
     return Row(
       children: [
         Expanded(
@@ -387,13 +422,13 @@ Widget _headerBudgetView(BuildContext context) {
       ],
     );
   }
-  else{
+  else {
     return SizedBox(height: 0.5);
   }
 }
 
 Widget _balanceView(BuildContext context) {
-  if(_swapIndex == 0) {
+  if (_swapIndex == 0) {
     return Row(
       children: [
         Expanded(
@@ -419,7 +454,9 @@ Widget _balanceView(BuildContext context) {
               style: new TextStyle(
                 //fontFamily: "Quicksand",
                 fontSize: 16.0,
-                color: (_totalIncome - _totalExpense) > 0 ?Colors.green : Colors.red,
+                color: (_totalIncome - _totalExpense) > 0
+                    ? Colors.green
+                    : Colors.red,
 
                 fontWeight: FontWeight.bold,
               ),
@@ -429,8 +466,8 @@ Widget _balanceView(BuildContext context) {
       ],
     );
   }
-  else{
-    return SizedBox(height:0.5);
+  else {
+    return SizedBox(height: 0.5);
   }
 }
 
@@ -441,7 +478,7 @@ Widget _headerExpenseView(BuildContext context) {
         child: Padding(
           padding: EdgeInsets.only(left: 12.0, bottom: 5.0, top: 15),
           child: Text(
-            _swapIndex ==0?"TOTAL EXPENSE":"TOTAL INCOME",
+            _swapIndex == 0 ? "TOTAL EXPENSE" : "TOTAL INCOME",
             style: new TextStyle(
               //fontFamily: "Quicksand",
               fontSize: 16.0,
@@ -461,7 +498,7 @@ Widget _headerExpenseView(BuildContext context) {
             style: new TextStyle(
               //fontFamily: "Quicksand",
               fontSize: 16.0,
-              color: _swapIndex==0?Colors.yellowAccent:Colors.greenAccent,
+              color: _swapIndex == 0 ? Colors.yellowAccent : Colors.greenAccent,
               fontWeight: FontWeight.bold,
 
             ),
@@ -473,7 +510,8 @@ Widget _headerExpenseView(BuildContext context) {
 }
 
 Future<List<Expenditure>> getExpenseList(int type) {
-  return db.getExpenses(_monthNumber, _year, _mode,type);
+   print(_day.toString());
+  return db.getExpenses(_monthNumber, _year, _mode, type,_day);
 }
 
 double getTotalExpense(List<Expenditure> expenses) {
@@ -483,51 +521,57 @@ double getTotalExpense(List<Expenditure> expenses) {
   }
   return totalExpense;
 }
-Widget GetTotalIncome()
-{
+
+Widget GetTotalIncome() {
   return FutureBuilder<List<Expenditure>>(
       future: getExpenseList(1),
       builder: (context, snapshot) {
-        if (snapshot.hasError) {return Divider(
-            color: Colors.blueGrey
-        );}
+        if (snapshot.hasError) {
+          return Divider(
+              color: Colors.blueGrey
+          );
+        }
         var data = snapshot.data;
-        if(data != null) {
+        if (data != null) {
           _expenditureList = data;
-
         }
         if (snapshot.hasData) {
           _totalIncome = getTotalExpense(_expenditureList);
-         return _balanceView(context);
+          return _balanceView(context);
         }
         return Divider(
             color: Colors.white38
         );
       });
-
 }
+
 Widget _expenseListView(BuildContext context) {
   return FutureBuilder<List<Expenditure>>(
       future: getExpenseList(_swapIndex),
       builder: (context, snapshot) {
-        if (snapshot.hasError) {return Center(
-            child: Align(
-                alignment: Alignment.center,
-                child: Text("No Data Found",style: TextStyle(color: Colors.white))));}
+        if (snapshot.hasError) {
+          return Center(
+              child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                      "No Data Found", style: TextStyle(color: Colors.white))));
+        }
         var data = snapshot.data;
-        if(data != null) {
+        if (data != null) {
           _expenditureList = data;
         }
         if (snapshot.hasData) {
           _totalExpense = getTotalExpense(_expenditureList);
 
           return new Column(children: [
-            ExpenditureList(_expenditureList, _mode, _year, _monthNumber,_swapIndex, key: GlobalKey(),),
+            ExpenditureList(
+              _expenditureList, _mode, _year, _monthNumber, _swapIndex,_day,
+              key: GlobalKey(),),
 
             _headerExpenseView(context),
             Divider(
-            color: Colors.white38
-        ),
+                color: Colors.white38
+            ),
             GetTotalIncome(),
           ]);
         }

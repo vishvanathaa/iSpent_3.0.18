@@ -14,10 +14,11 @@ class TransactionList extends StatefulWidget {
   final int year;
   final int monthNumber;
   final String category;
+  final int day;
   TransactionList(
     this.mode,
     this.year,
-    this.monthNumber,this.category, {
+    this.monthNumber,this.category,this.day, {
     required Key key,
   }) : super(key: key);
 
@@ -36,7 +37,7 @@ class _TransactionListExpenseState extends State<TransactionList>
   @override
   Widget build(BuildContext context) {
     return new FutureBuilder<List<Expenditure>>(
-        future: getExpenseList(widget.monthNumber, widget.year, widget.mode),
+        future: getExpenseList(widget.monthNumber, widget.year, widget.mode,widget.day),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -213,6 +214,6 @@ class _TransactionListExpenseState extends State<TransactionList>
   }
 }
 
-Future<List<Expenditure>> getExpenseList(int monthNumber, int year, int mode) {
-  return db.getExpenses(monthNumber, year, mode,_swapIndex);
+Future<List<Expenditure>> getExpenseList(int monthNumber, int year, int mode,int day) {
+  return db.getExpenses(monthNumber, year, mode,_swapIndex,day);
 }
