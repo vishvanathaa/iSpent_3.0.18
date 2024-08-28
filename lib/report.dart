@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import "database/model/expenditure.dart";
 import "dart:collection";
-import 'dart:developer';
 import 'package:ispent/database/database_helper.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:ispent/utilities.dart';
